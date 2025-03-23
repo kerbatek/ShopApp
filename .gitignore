@@ -1,0 +1,37 @@
+# Build directories
+bin/
+obj/
+
+# Rider files
+.idea/
+*.sln.iml
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.userprefs
+
+# ASP.NET temporary files
+*.vs/
+.vs/
+
+# NuGet packages
+*.nupkg
+packages/
+# Uncomment if using PackageReference instead of packages folder
+# NuGetPackages/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Other generated files (if any)
+*.cache
+
+# Db password 
+ShopApp/appsettings.json
+

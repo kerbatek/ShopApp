@@ -1,0 +1,12 @@
+using ShopApp.Models.Core;
+
+namespace ShopApp.Services.Core.Interfaces;
+
+public interface IApplicationUserService
+{
+    Task<IEnumerable<ApplicationUser>> GetAllApplicationUsersAsync();
+    Task<ApplicationUser> GetApplicationUserByIdAsync(int id);
+    Task AddApplicationUserAsync(ApplicationUser applicationUser);
+    Task UpdateApplicationUserAsync(ApplicationUser applicationUser);
+    Task DeleteApplicationUserAsync(ApplicationUser applicationUser);
+}

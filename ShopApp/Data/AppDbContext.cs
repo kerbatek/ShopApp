@@ -2,6 +2,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ShopApp.Models;
+using ShopApp.Models.Catalog;
+using ShopApp.Models.Core;
+using ShopApp.Models.ECommerce;
+using ShopApp.Models.Engagement;
+using ShopApp.Models.Logistics;
 
 namespace ShopApp.Data;
 

@@ -1,5 +1,4 @@
 using ShopApp.Data;
-using ShopApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ShopApp.Models.Core;
@@ -14,7 +13,6 @@ using ShopApp.Repositories.Engagement;
 using ShopApp.Repositories.Engagement.Interfaces;
 using ShopApp.Repositories.Logistics;
 using ShopApp.Repositories.Logistics.Interfaces;
-using ShopApp.Services;
 using ShopApp.Services.Catalog;
 using ShopApp.Services.Catalog.Interfaces;
 using ShopApp.Services.Core;
@@ -97,6 +95,7 @@ builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
 
 
 builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -115,6 +114,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
-
+app.MapControllers();
 
 app.Run();

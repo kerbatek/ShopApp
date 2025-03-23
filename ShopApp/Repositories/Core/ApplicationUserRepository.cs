@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ShopApp.Data;
 using ShopApp.Models.Core;
 using ShopApp.Repositories.Core.Interfaces;
@@ -8,6 +9,11 @@ public class ApplicationUserRepository : Repository<ApplicationUser>, IApplicati
 {
     public ApplicationUserRepository(AppDbContext dbContext) : base(dbContext)
     {
-        
+
+    }
+
+    public async Task<ApplicationUser?> FindByEmailAsync(string email)
+    {
+        return await DbSet.FirstOrDefaultAsync(x => x.Email == email);
     }
 }

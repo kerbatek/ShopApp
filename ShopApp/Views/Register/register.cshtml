@@ -1,0 +1,34 @@
+@model Dictionary<string, string>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Login Result</title>
+</head>
+<body>
+<div>
+    @if (Model.Any())
+    {
+        @if (Model.TryGetValue("error", out string value))
+        {
+            <h1>Register failed!</h1>
+            <h3>@value</h3>
+        }
+        else
+        {
+            <h1>Account created</h1>
+        }
+    }
+    else
+    {
+        <p>No result data to display.</p>
+    }
+    <a href="/core/register" class="btn">Go back</a>
+</div>
+</body>
+</html>

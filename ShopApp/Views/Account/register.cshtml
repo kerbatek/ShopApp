@@ -1,0 +1,26 @@
+@model Microsoft.AspNetCore.Identity.IdentityResult
+@{
+    ViewData["Title"] = "Registration Result";
+    Layout = "_Layout";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model.Succeeded)
+{
+    <div class="alert alert-success">
+        Registration succeeded!
+    </div>
+}
+else
+{
+    <div class="alert alert-danger">
+        Registration failed.
+    </div>
+    <ul>
+        @foreach (var error in Model.Errors)
+        {
+            <li>@error.Description</li>
+        }
+    </ul>
+}

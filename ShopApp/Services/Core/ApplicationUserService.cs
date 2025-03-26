@@ -1,94 +1,78 @@
-using ShopApp.Models.Core;
-using ShopApp.Repositories.Core.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using ShopApp.Models.Core; 
 using ShopApp.Services.Core.Interfaces;
 
-namespace ShopApp.Services.Core;
-
-public class ApplicationUserService : IApplicationUserService
+namespace ShopApp.Services.Core
 {
-    private readonly IApplicationUserRepository _applicationUserRepository;
-
-    public ApplicationUserService(IApplicationUserRepository applicationUserRepository)
+    public class ApplicationUserService : IApplicationUserService
     {
-        _applicationUserRepository = applicationUserRepository;
-    }
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public async Task<IEnumerable<ApplicationUser>> GetAllApplicationUsersAsync()
-    {
-        return await _applicationUserRepository.GetAllAsync();
-    }
-
-    public async Task<ApplicationUser> GetApplicationUserByIdAsync(int id)
-    {
-        return await _applicationUserRepository.GetByIdAsync(id);
-    }
-
-    public async Task AddApplicationUserAsync(ApplicationUser applicationUser)
-    {
-        await _applicationUserRepository.AddAsync(applicationUser);
-        await _applicationUserRepository.SaveChangesAsync();
-    }
-
-    public async Task UpdateApplicationUserAsync(ApplicationUser applicationUser)
-    {
-        await _applicationUserRepository.UpdateAsync(applicationUser);
-        await _applicationUserRepository.SaveChangesAsync();
-    }
-
-    public async Task DeleteApplicationUserAsync(ApplicationUser applicationUser)
-    {
-        await _applicationUserRepository.DeleteAsync(applicationUser);
-        await _applicationUserRepository.SaveChangesAsync();
-    }
-
-    public async Task<Dictionary<string, string>> AuthenticateUserAsync(string email, string password)
-    {
-        var user = await _applicationUserRepository.FindByEmailAsync(email);
-        if (user == null)
+        public ApplicationUserService(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
-            return new Dictionary<string, string>
-            {
-                {"error", "User not found"},
-            };
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
-        if (password == user.PasswordHash)
+        public async Task<IEnumerable<ApplicationUser>> GetAllApplicationUsersAsync()
         {
-            return new Dictionary<string, string>
-            {
-                {"FirstName", user.FirstName},
-                {"LastName", user.LastName},
-            };
+            return await _userManager.Users.ToListAsync();
         }
-        return new Dictionary<string, string>
-        {
-            {"error", "Authentication failed"},
-        };
-    }
 
-    public async Task<Dictionary<string, string>> RegisterUserAsync(string email, string password, string firstName,
-        string lastName, DateTime dateOfBirth)
-    {
-        if (await _applicationUserRepository.FindByEmailAsync(email) != null)
+        public async Task<ApplicationUser> GetApplicationUserByIdAsync(string id)
         {
-            return new Dictionary<string, string>
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
             {
-                {"error", "User  with this email already exists"},
-            };
+                throw new InvalidOperationException("User not found.");
+            }
+            return user;
         }
-        ApplicationUser userToSave = new ApplicationUser
+
+        public async Task<IdentityResult> RegisterUserAsync(string email, string password, string firstName, string lastName, DateTime dateOfBirth)
         {
-            Email = email,
-            FirstName = firstName,
-            LastName = lastName,
-            DateOfBirth = DateTime.SpecifyKind(dateOfBirth, DateTimeKind.Utc),
-            PasswordHash = password
-        };
-        await _applicationUserRepository.AddAsync(userToSave);
-        await _applicationUserRepository.SaveChangesAsync();
-        return new Dictionary<string, string>
+            if (email.Length < 4 || password.Length < 4 || firstName.Length < 4 || lastName.Length < 4 ||
+                dateOfBirth.Year < 1900)
+            {
+                return IdentityResult.Failed();
+            }
+            
+            var user = new ApplicationUser
+            {
+                UserName = email,
+                Email = email,
+                FirstName = firstName,   
+                LastName = lastName,
+                DateOfBirth = DateTime.SpecifyKind(dateOfBirth, DateTimeKind.Utc),
+
+            };
+
+            var result = await _userManager.CreateAsync(user, password);
+
+            if (result.Succeeded)
+            {
+                await _signInManager.SignInAsync(user, isPersistent: false);
+            }
+
+            return result;
+        }
+
+        public async Task<SignInResult> AuthenticateUserAsync(string email, string password)
         {
-            {"status", "Success"},
-        };
+            if (email.Length < 4 || password.Length < 4)
+            {
+                return SignInResult.Failed;
+            }
+            return await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
+        }
+
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
+        }
     }
 }

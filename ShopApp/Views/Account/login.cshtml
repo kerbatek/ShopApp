@@ -1,0 +1,38 @@
+@model Microsoft.AspNetCore.Identity.SignInResult
+@{
+    ViewData["Title"] = "Login Result";
+    Layout = "_Layout";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model.Succeeded)
+{
+    <div class="alert alert-success">
+        Login succeeded!
+    </div>
+}
+else if (Model.IsLockedOut)
+{
+    <div class="alert alert-warning">
+        Your account is locked out.
+    </div>
+}
+else if (Model.IsNotAllowed)
+{
+    <div class="alert alert-warning">
+        Login is not allowed.
+    </div>
+}
+else if (Model.RequiresTwoFactor)
+{
+    <div class="alert alert-info">
+        Two-factor authentication is required.
+    </div>
+}
+else
+{
+    <div class="alert alert-danger">
+        Login failed.
+    </div>
+}

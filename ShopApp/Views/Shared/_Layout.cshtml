@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShopApp</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
+            overflow: hidden;
+        }
+        header {
+            background-color: #2C3E50;
+            padding: 15px 30px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+        nav li {
+            margin-right: 30px;
+        }
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #3498db;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav>
+        <ul>
+            <li><a href="/core/login">Login</a></li>
+            <li><a href="/core/register">Register</a></li>
+        </ul>
+    </nav>
+</header>
+<div class="container">
+    @RenderBody()
+</div>
+</body>
+</html>

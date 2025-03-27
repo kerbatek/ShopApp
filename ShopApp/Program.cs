@@ -99,8 +99,21 @@ builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+//return to home if webpage not found
+app.MapFallback(context =>
+{
+    context.Response.Redirect("/");
+    return Task.CompletedTask;
+});
 
 if (!app.Environment.IsDevelopment())
 {

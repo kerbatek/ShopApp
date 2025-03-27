@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ShopApp.Services.Core.Interfaces;
+using ShopApp.ViewModels;
 
 namespace ShopApp.Controllers;
 [Route("core")]
@@ -33,9 +34,24 @@ public class AccountController : Controller
     }
         
     [HttpPost("register")]
-    public async Task<IActionResult> Register(string email, string password, string firstName, string lastName, DateTime dateOfBirth)
+    public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        var result = await _applicationUserService.RegisterUserAsync(email, password, firstName, lastName, dateOfBirth);
-        return View(result);
+        if (!ModelState.IsValid)
+        {
+            return View("registerPage", model);
+        }
+
+        var result = await _applicationUserService.RegisterUserAsync(model);
+
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+            return View("registerPage", model);
+        }
+
+        return RedirectToAction("Index", "Home");
     }
 }

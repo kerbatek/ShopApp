@@ -36,15 +36,13 @@ namespace ShopApp.Services.Core
 
         public async Task<IdentityResult> RegisterUserAsync(RegisterViewModel model)
         {
-            
             var user = new ApplicationUser
             {
                 UserName = model.Email.ToLower(),
                 Email = model.Email.ToLower(),
-                FirstName = model.FirstName,   
+                FirstName = model.FirstName,
                 LastName = model.LastName,
-                DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc),
-
+                DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc)
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -56,6 +54,7 @@ namespace ShopApp.Services.Core
 
             return result;
         }
+
 
         public async Task<SignInResult> AuthenticateUserAsync(string email, string password)
         {

@@ -40,4 +40,20 @@ public class ProductService : IProductService
         await _productRepository.DeleteAsync(product);
         await _productRepository.SaveChangesAsync();
     }
+    
+    public async Task DeleteProductByIdAsync(int id)
+    {
+        try
+        {
+            Product product = await _productRepository.GetByIdAsync(id);
+            await _productRepository.DeleteAsync(product);
+            await _productRepository.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            return;
+        }
+        
+    }
+    
 }

@@ -1,0 +1,56 @@
+﻿@model IEnumerable<ShopApp.Models.Catalog.Product>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Products List";
+    ViewData["Stylesheet"] = "~/css/tables.css";
+}
+
+<div class="container">
+    <a asp-action="Create" class="create-button">
+        <i class="fas fa-plus"></i> Create New Product
+    </a>
+    @if (Model.Any())
+    {
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>CreatedAt</th>
+                <th>UpdatedAt</th>
+                <th>Actions</th>
+            </tr>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.ProductID</td>
+                    <td>@product.ProductName</td>
+                    <td>@product.Description</td>
+                    <td>@product.Price</td>
+                    <td>@product.CreatedAt?.ToLocalTime()</td>
+                    <td>@product.UpdatedAt?.ToLocalTime()</td>
+                    <td>
+                        <form asp-action="Edit" method="get" class="action-form">
+                            <input type="hidden" name="id" value="@product.ProductID" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="edit-button">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </form>
+                    
+                        <form asp-action="Delete" method="post" class="action-form" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                            <input type="hidden" name="id" value="@product.ProductID"/>
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="delete-button">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    
+</div>

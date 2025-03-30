@@ -7,6 +7,7 @@ namespace ShopApp.Models.Catalog
     public class Category
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CategoryID { get; set; }
 
         [MaxLength(50)]

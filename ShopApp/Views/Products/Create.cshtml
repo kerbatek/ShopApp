@@ -1,0 +1,55 @@
+﻿@model ShopApp.ViewModels.ProductViewModel;
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Add Products";
+    ViewData["Stylesheet"] = "~/css/forms.css";
+}
+
+<div class="form-container">
+    <div class="form-box">
+        <h1>Enter product information</h1>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div class="input-group">
+                <label asp-for="ProductName">Name</label>
+                <input asp-for="ProductName" class="form-control" placeholder="Enter product name" />
+                <span asp-validation-for="ProductName" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <label asp-for="ProductDescription">Description</label>
+                <textarea asp-for="ProductDescription" class="form-control" placeholder="Enter product description"></textarea>
+                <span asp-validation-for="ProductDescription" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <label asp-for="ProductPrice">Price</label>
+                <input asp-for="ProductPrice" class="form-control" placeholder="Enter product price" />
+                <span asp-validation-for="ProductPrice" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="form-button">Add product</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.2/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.11/dist/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/localization/messages_pl.min.js"></script>
+    <script>
+        // Allow comma as decimal separator
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /^-?\d+(,\d+)?$/.test(value);
+        };
+        $.validator.methods.range = function (value, element, param) {
+            // Convert comma to dot before checking numeric range
+            var globalizedValue = value.replace(",", ".");
+            return this.optional(element) 
+                || (globalizedValue >= param[0] && globalizedValue <= param[1]);
+        };
+    </script>
+}

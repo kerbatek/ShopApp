@@ -9,4 +9,5 @@ public interface ICategoryService
     Task AddCategoryAsync(Category category);
     Task UpdateCategoryAsync(Category category);
     Task DeleteCategoryAsync(Category category);
+    Task DeleteCategoryByIdAsync(int id);
 }

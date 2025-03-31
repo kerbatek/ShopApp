@@ -13,7 +13,7 @@ public class ProductCategoryService : IProductCategoryService
         _productCategoryRepository = productCategoryRepository;
     }
 
-    public async Task<IEnumerable<ProductCategory>> GetAllProductCategorysAsync()
+    public async Task<IEnumerable<ProductCategory>> GetAllProductCategoriesAsync()
     {
         return await _productCategoryRepository.GetAllAsync();
     }

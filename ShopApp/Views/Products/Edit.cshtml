@@ -36,6 +36,19 @@
                 <span asp-validation-for="ProductPrice" class="text-danger"></span>
             </div>
 
+            <select asp-for="CategoryIds" multiple="multiple">
+                @foreach (var category in Model.AvailableCategories)
+                {
+                    if (Model.CategoryIds.Contains(category.CategoryID))
+                    {
+                        <option value="@category.CategoryID" selected="selected">@category.CategoryName</option>
+                    }
+                    else
+                    {
+                        <option value="@category.CategoryID">@category.CategoryName</option>
+                    }
+                }
+            </select>
             <button type="submit" class="form-button">Edit product</button>
         </form>
     </div>

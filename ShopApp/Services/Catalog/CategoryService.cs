@@ -40,4 +40,18 @@ public class CategoryService : ICategoryService
         await _categoryRepository.DeleteAsync(category);
         await _categoryRepository.SaveChangesAsync();
     }
+
+    public async Task DeleteCategoryByIdAsync(int id)
+    {
+        try
+        {
+            var category = await _categoryRepository.GetByIdAsync(id);
+            await _categoryRepository.DeleteAsync(category);
+            await _categoryRepository.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            return;
+        }
+    }
 }

@@ -4,7 +4,7 @@ namespace ShopApp.Services.Catalog.Interfaces;
 
 public interface IProductCategoryService
 {
-    Task<IEnumerable<ProductCategory>> GetAllProductCategorysAsync();
+    Task<IEnumerable<ProductCategory>> GetAllProductCategoriesAsync();
     Task<ProductCategory> GetProductCategoryByIdAsync(int id);
     Task AddProductCategoryAsync(ProductCategory productCategory);
     Task UpdateProductCategoryAsync(ProductCategory productCategory);

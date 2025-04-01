@@ -10,11 +10,13 @@ public class ProductsController : Controller
 {
     private readonly IProductService _productService;
     private readonly ICategoryService _categoryService;
+    private readonly IProductCategoryService _productCategoryService;
 
-    public ProductsController(IProductService productService,  ICategoryService categoryService)
+    public ProductsController(IProductService productService,  ICategoryService categoryService, IProductCategoryService productCategoryService)
     {
         _productService = productService;
         _categoryService = categoryService;
+        _productCategoryService = productCategoryService;
     }
 
     [HttpGet("")]
@@ -82,7 +84,7 @@ public class ProductsController : Controller
     {
         if (!ModelState.IsValid)
         {
-            //return View(model);
+            return View(model);
         }
 
         var product = await _productService.GetProductByIdAsync(model.ProductId);
@@ -96,8 +98,32 @@ public class ProductsController : Controller
             product.Description = model.ProductDescription;
             product.UpdatedAt = DateTime.UtcNow;
         }
-        
         await _productService.UpdateProductAsync(product);
+        
+        var existingCategories = await _productCategoryService.GetAllProductCategoriesByProductIdAsync(product.ProductID);
+        var existingCategoryIds = existingCategories.Select(c => c.CategoryID).ToList();
+
+        foreach (var categoryId in model.CategoryIds)
+        {
+            if (!existingCategoryIds.Contains(categoryId))
+            {
+                var categoryEntry = new ProductCategory
+                {
+                    AssignedAt = DateTime.UtcNow,
+                    CategoryID = categoryId,
+                    ProductID = product.ProductID,
+                };
+                await _productCategoryService.AddProductCategoryAsync(categoryEntry);
+            }
+        }
+        
+        foreach (var category in existingCategories)
+        {
+            if (!model.CategoryIds.Contains(category.CategoryID))
+            {
+                await _productCategoryService.DeleteProductCategoryAsync(category);
+            }
+        }
         return RedirectToAction("Index");
     }
 

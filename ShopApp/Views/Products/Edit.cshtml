@@ -36,7 +36,7 @@
                 <span asp-validation-for="ProductPrice" class="text-danger"></span>
             </div>
 
-            <select asp-for="CategoryIds" multiple="multiple">
+            <select asp-for="CategoryIds" multiple="multiple" class="select-input">
                 @foreach (var category in Model.AvailableCategories)
                 {
                     if (Model.CategoryIds.Contains(category.CategoryID))

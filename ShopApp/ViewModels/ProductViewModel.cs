@@ -19,6 +19,6 @@ public class ProductViewModel
     [Range(0, 100000, ErrorMessage = "Price must be between 0 and 100000")]
     public decimal ProductPrice { get; set; }
     
-    public List<int> CategoryIds { get; set; }
-    public IEnumerable<Category> AvailableCategories { get; set; }
+    public List<int>? CategoryIds { get; set; } 
+    public IEnumerable<Category>? AvailableCategories { get; set; }
 }

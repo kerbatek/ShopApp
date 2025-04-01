@@ -102,24 +102,25 @@ public class ProductsController : Controller
         
         var existingCategories = await _productCategoryService.GetAllProductCategoriesByProductIdAsync(product.ProductID);
         var existingCategoryIds = existingCategories.Select(c => c.CategoryID).ToList();
-
-        foreach (var categoryId in model.CategoryIds)
+        if (model.CategoryIds != null)
         {
-            if (!existingCategoryIds.Contains(categoryId))
+            foreach (var categoryId in model.CategoryIds)
             {
-                var categoryEntry = new ProductCategory
+                if (!existingCategoryIds.Contains(categoryId))
                 {
-                    AssignedAt = DateTime.UtcNow,
-                    CategoryID = categoryId,
-                    ProductID = product.ProductID,
-                };
-                await _productCategoryService.AddProductCategoryAsync(categoryEntry);
+                    var categoryEntry = new ProductCategory
+                    {
+                        AssignedAt = DateTime.UtcNow,
+                        CategoryID = categoryId,
+                        ProductID = product.ProductID,
+                    };
+                    await _productCategoryService.AddProductCategoryAsync(categoryEntry);
+                }
             }
         }
-        
         foreach (var category in existingCategories)
         {
-            if (!model.CategoryIds.Contains(category.CategoryID))
+            if (model.CategoryIds == null || !model.CategoryIds.Contains(category.CategoryID))
             {
                 await _productCategoryService.DeleteProductCategoryAsync(category);
             }

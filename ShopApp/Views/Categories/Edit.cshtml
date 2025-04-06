@@ -12,7 +12,7 @@
         <div asp-validation-summary="All" class="text-danger"></div>
         <form asp-action="Edit" method="post">
             @Html.AntiForgeryToken()
-            <div class="input-group">
+            <div class="input-group" hidden>
                 <label asp-for="CategoryId">ID</label>
                 <input asp-for="CategoryId" class="readonly-input" value="@Model.CategoryId" readonly/>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>

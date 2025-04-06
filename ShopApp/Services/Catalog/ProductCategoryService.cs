@@ -44,4 +44,34 @@ public class ProductCategoryService : IProductCategoryService
         await _productCategoryRepository.DeleteAsync(productCategory);
         await _productCategoryRepository.SaveChangesAsync();
     }
+    public async Task UpdateProductCategoriesAsync(int productId, IEnumerable<int> newCategoryIds)
+    {
+        var existingCategories = await GetAllProductCategoriesByProductIdAsync(productId);
+        var existingCategoryIds = existingCategories.Select(c => c.CategoryID).ToList();
+        
+        if (newCategoryIds != null)
+        {
+            foreach (var categoryId in newCategoryIds)
+            {
+                if (!existingCategoryIds.Contains(categoryId))
+                {
+                    var categoryEntry = new ProductCategory
+                    {
+                        AssignedAt = DateTime.UtcNow,
+                        CategoryID = categoryId,
+                        ProductID = productId,
+                    };
+                    await AddProductCategoryAsync(categoryEntry);
+                }
+            }
+        }
+        
+        foreach (var category in existingCategories)
+        {
+            if (newCategoryIds == null || !newCategoryIds.Contains(category.CategoryID))
+            {
+                await DeleteProductCategoryAsync(category);
+            }
+        }
+    }
 }

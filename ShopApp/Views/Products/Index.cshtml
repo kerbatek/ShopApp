@@ -13,11 +13,11 @@
     {
         <table>
             <tr>
-                <th>ID</th>
+                <th>Image</th>
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
-                <th>Categories</th> 
+                <th>Categories</th>
                 <th>CreatedAt</th>
                 <th>UpdatedAt</th>
                 <th>Actions</th>
@@ -25,15 +25,23 @@
             @foreach (var product in Model)
             {
                 <tr>
-                    <td>@product.ProductID</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" alt="@product.ProductName" width="100" />
+                        }
+                        else
+                        {
+                            <em>No Image</em>
+                        }
+                    </td>
                     <td>@product.ProductName</td>
                     <td>@product.Description</td>
                     <td>@product.Price</td>
                     <td>
                         @if (product.ProductCategories != null && product.ProductCategories.Any())
                         {
-                            @string.Join(", ", product.ProductCategories
-                                .Select(pc => pc.Category.CategoryName))
+                            @string.Join(", ", product.ProductCategories.Select(pc => pc.Category.CategoryName))
                         }
                         else
                         {
@@ -43,22 +51,16 @@
                     <td>@product.CreatedAt?.ToLocalTime()</td>
                     <td>@product.UpdatedAt?.ToLocalTime()</td>
                     <td>
-                        <form asp-action="Edit" method="get" class="action-form">
+                        <a asp-action="Edit" asp-route-id="@product.ProductID" class="edit-button" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form asp-action="Delete" method="post" class="action-form" onsubmit="return confirm('Are you sure you want to delete this product?');" style="display:inline;">
                             <input type="hidden" name="id" value="@product.ProductID" />
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="edit-button">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </form>
-
-                        <form asp-action="Delete" method="post" class="action-form" onsubmit="return confirm('Are you sure you want to delete this product?');">
-                            <input type="hidden" name="id" value="@product.ProductID"/>
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="delete-button">
+                            <button type="submit" class="delete-button" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>
-
                     </td>
                 </tr>
             }

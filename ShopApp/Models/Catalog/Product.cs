@@ -25,6 +25,8 @@ namespace ShopApp.Models.Catalog
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        
+        public string? ImageUrl { get; set; }
 
         public ICollection<ProductCategory> ProductCategories { get; set; }
         public ICollection<CartItem> CartItems { get; set; }

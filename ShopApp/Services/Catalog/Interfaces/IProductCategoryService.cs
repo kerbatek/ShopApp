@@ -10,4 +10,5 @@ public interface IProductCategoryService
     Task AddProductCategoryAsync(ProductCategory productCategory);
     Task UpdateProductCategoryAsync(ProductCategory productCategory);
     Task DeleteProductCategoryAsync(ProductCategory productCategory);
+    Task UpdateProductCategoriesAsync(int productId, IEnumerable<int> newCategoryIds);
 }

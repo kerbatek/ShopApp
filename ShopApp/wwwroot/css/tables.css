@@ -45,6 +45,7 @@ table th {
     cursor: pointer;
     color: #007bff;
     font-size: 1.2em;
+    text-decoration: none;
 }
 
 .edit-button:hover {

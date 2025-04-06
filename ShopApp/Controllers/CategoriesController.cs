@@ -32,18 +32,11 @@ public class CategoriesController : Controller
     {
         if (ModelState.IsValid)
         {
-            var category = new Category()
-            {
-                CategoryName = categoryViewModel.CategoryName,
-                CategoryDescription = categoryViewModel.CategoryDescription,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-
-            };
-            await _categoryService.AddCategoryAsync(category);
+           await _categoryService.CreateCategoryAsync(categoryViewModel);
         }
         return RedirectToAction("Index");
     }
+    
     [HttpPost("delete")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -58,17 +51,25 @@ public class CategoriesController : Controller
     [HttpGet("edit")]
     public async Task<IActionResult> Edit(int id)
     {
-        if (!ModelState.IsValid)
+        Category category;
+        
+        try
         {
-            return View("Index");
+            category = await _categoryService.GetCategoryByIdAsync(id);
         }
-        var category = await _categoryService.GetCategoryByIdAsync(id);
+        
+        catch (Exception)
+        {
+            return RedirectToAction("Index");
+        }
+        
         var model = new CategoryViewModel()
         {
             CategoryId = category.CategoryID,
             CategoryName = category.CategoryName,
             CategoryDescription = category.CategoryDescription,
         };
+        
         return View(model);
     }
 
@@ -79,15 +80,16 @@ public class CategoriesController : Controller
         {
             return View(model);
         }
-        var category = await _categoryService.GetCategoryByIdAsync(model.CategoryId);
-        if (model.CategoryId != category.CategoryID || model.CategoryName != category.CategoryName || model.CategoryDescription != category.CategoryDescription)
+        
+        try
         {
-            category.CategoryName = model.CategoryName;
-            category.CategoryDescription = model.CategoryDescription;
-            category.UpdatedAt = DateTime.UtcNow;
-            await _categoryService.UpdateCategoryAsync(category);
+            await _categoryService.EditCategoryAsync(model);
         }
+        catch (Exception)
+        {
+            //ignored
+        }
+
         return RedirectToAction("Index");
     }
-    
 }   

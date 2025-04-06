@@ -10,13 +10,11 @@ public class ProductsController : Controller
 {
     private readonly IProductService _productService;
     private readonly ICategoryService _categoryService;
-    private readonly IProductCategoryService _productCategoryService;
 
     public ProductsController(IProductService productService,  ICategoryService categoryService, IProductCategoryService productCategoryService)
     {
         _productService = productService;
         _categoryService = categoryService;
-        _productCategoryService = productCategoryService;
     }
 
     [HttpGet("")]
@@ -27,9 +25,15 @@ public class ProductsController : Controller
     }
 
     [HttpGet("create")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        return View();
+        var categories = await _categoryService.GetAllCategoriesAsync();
+        var model = new ProductViewModel
+        {
+            AvailableCategories = categories,
+        };
+        
+        return View(model);
     }
 
     [HttpPost("create")]
@@ -39,29 +43,22 @@ public class ProductsController : Controller
         {
             return View(model);
         }
-
-        var product = new Product()
-        {
-            ProductName = model.ProductName,
-            Price = model.ProductPrice,
-            Description = model.ProductDescription,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-        };
-        await _productService.AddProductAsync(product);
+        await _productService.CreateProductAsync(model);
         return RedirectToAction("Index");
-
     }
 
     [HttpGet("edit")]
     public async Task<IActionResult> Edit(int id)
     {
-        if (!ModelState.IsValid)
+        Product product;
+        try
         {
-            return View("Index");
+            product = await _productService.GetProductWithCategoryAsync(id);
         }
-        
-        var product = await _productService.GetProductWithCategoryAsync(id);
+        catch (Exception)
+        {
+            return RedirectToAction("Index");
+        }
         var categories = await _categoryService.GetAllCategoriesAsync();
     
         var model = new ProductViewModel
@@ -71,7 +68,8 @@ public class ProductsController : Controller
             ProductPrice = product.Price,
             ProductDescription = product.Description,
             CategoryIds = product.ProductCategories?.Select(pc => pc.CategoryID).ToList() ?? new List<int>(),
-            AvailableCategories = categories 
+            AvailableCategories = categories, 
+            ImageUrl = product.ImageUrl,
         };
 
         return View(model);
@@ -87,43 +85,13 @@ public class ProductsController : Controller
             return View(model);
         }
 
-        var product = await _productService.GetProductByIdAsync(model.ProductId);
-        
-        if (product.ProductName != model.ProductName ||
-            product.Price != model.ProductPrice ||
-            product.Description != model.ProductDescription)
+        try
         {
-            product.ProductName = model.ProductName;
-            product.Price = model.ProductPrice;
-            product.Description = model.ProductDescription;
-            product.UpdatedAt = DateTime.UtcNow;
+            await _productService.EditProductAsync(model);
         }
-        await _productService.UpdateProductAsync(product);
-        
-        var existingCategories = await _productCategoryService.GetAllProductCategoriesByProductIdAsync(product.ProductID);
-        var existingCategoryIds = existingCategories.Select(c => c.CategoryID).ToList();
-        if (model.CategoryIds != null)
+        catch (Exception)
         {
-            foreach (var categoryId in model.CategoryIds)
-            {
-                if (!existingCategoryIds.Contains(categoryId))
-                {
-                    var categoryEntry = new ProductCategory
-                    {
-                        AssignedAt = DateTime.UtcNow,
-                        CategoryID = categoryId,
-                        ProductID = product.ProductID,
-                    };
-                    await _productCategoryService.AddProductCategoryAsync(categoryEntry);
-                }
-            }
-        }
-        foreach (var category in existingCategories)
-        {
-            if (model.CategoryIds == null || !model.CategoryIds.Contains(category.CategoryID))
-            {
-                await _productCategoryService.DeleteProductCategoryAsync(category);
-            }
+            // ignored
         }
         return RedirectToAction("Index");
     }

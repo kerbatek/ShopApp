@@ -23,8 +23,13 @@ using ShopApp.Services.Engagement;
 using ShopApp.Services.Engagement.Interfaces;
 using ShopApp.Services.Logistics;
 using ShopApp.Services.Logistics.Interfaces;
+using System.Globalization;
+using Microsoft.Extensions.Options;
+using ShopApp.Services.Shared;
+using ShopApp.Services.Shared.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -32,8 +37,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
-
-
 
 //Dependency Injection
 
@@ -95,12 +98,25 @@ builder.Services.AddScoped<IWishlistService, WishlistService>();
 builder.Services.AddScoped<IWishlistItemRepository, WishlistItemRepository>();
 builder.Services.AddScoped<IWishlistItemService, WishlistItemService>();
 
+builder.Services.AddScoped<IImageService, ImageService>();
 
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var supportedCultures = new[] { "pl-PL", "en-US" };
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var defaultCulture = new CultureInfo("pl-PL");
+
+    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture(defaultCulture);
+    options.SupportedCultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+    options.SupportedUICultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
+    
+    options.RequestCultureProviders.Insert(0, new Microsoft.AspNetCore.Localization.QueryStringRequestCultureProvider());
+});
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
@@ -120,6 +136,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
     app.UseHsts(); 
 }
+var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+app.UseRequestLocalization(localizationOptions);
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -132,4 +150,4 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();

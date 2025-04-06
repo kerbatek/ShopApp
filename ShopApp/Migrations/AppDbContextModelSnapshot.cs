@@ -128,7 +128,129 @@ namespace ShopApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Address", b =>
+            modelBuilder.Entity("ShopApp.Models.Catalog.Category", b =>
+                {
+                    b.Property<int>("CategoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CategoryID"));
+
+                    b.Property<string>("CategoryDescription")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("CategoryID");
+
+                    b.ToTable("Categories", "ShopDB");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Catalog.Inventory", b =>
+                {
+                    b.Property<int>("InventoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("InventoryID"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("InventoryID");
+
+                    b.HasIndex("ProductID")
+                        .IsUnique();
+
+                    b.ToTable("Inventory", "ShopDB");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Catalog.Product", b =>
+                {
+                    b.Property<int>("ProductID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProductID"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ProductID");
+
+                    b.ToTable("Products", "ShopDB");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Catalog.ProductCategory", b =>
+                {
+                    b.Property<int>("ProductID")
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
+
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("integer")
+                        .HasColumnOrder(1);
+
+                    b.Property<DateTime?>("AssignedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ProductID", "CategoryID");
+
+                    b.HasIndex("CategoryID");
+
+                    b.ToTable("ProductCategories", "ShopDB");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Core.Address", b =>
                 {
                     b.Property<int>("AddressID")
                         .ValueGeneratedOnAdd()
@@ -172,7 +294,7 @@ namespace ShopApp.Migrations
                     b.ToTable("Addresses", "ShopDB");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.ApplicationRole", b =>
+            modelBuilder.Entity("ShopApp.Models.Core.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -202,7 +324,7 @@ namespace ShopApp.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("ShopApp.Models.ApplicationUser", b =>
+            modelBuilder.Entity("ShopApp.Models.Core.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -277,7 +399,35 @@ namespace ShopApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Cart", b =>
+            modelBuilder.Entity("ShopApp.Models.Core.UserAddress", b =>
+                {
+                    b.Property<string>("UserID")
+                        .HasColumnType("text")
+                        .HasColumnOrder(0);
+
+                    b.Property<int>("AddressID")
+                        .HasColumnType("integer")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("AddressName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("AssignedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("UserID", "AddressID");
+
+                    b.HasIndex("AddressID");
+
+                    b.ToTable("UserAddresses", "ShopDB");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.ECommerce.Cart", b =>
                 {
                     b.Property<int>("CartID")
                         .ValueGeneratedOnAdd()
@@ -310,7 +460,7 @@ namespace ShopApp.Migrations
                     b.ToTable("Carts", "ShopDB");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.CartItem", b =>
+            modelBuilder.Entity("ShopApp.Models.ECommerce.CartItem", b =>
                 {
                     b.Property<int>("CartItemID")
                         .ValueGeneratedOnAdd()
@@ -339,69 +489,7 @@ namespace ShopApp.Migrations
                     b.ToTable("CartItems", "ShopDB");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Category", b =>
-                {
-                    b.Property<int>("CategoryID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CategoryID"));
-
-                    b.Property<string>("CategoryDescription")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("CategoryID");
-
-                    b.ToTable("Categories", "ShopDB");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.Inventory", b =>
-                {
-                    b.Property<int>("InventoryID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("InventoryID"));
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ProductID")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("InventoryID");
-
-                    b.HasIndex("ProductID")
-                        .IsUnique();
-
-                    b.ToTable("Inventory", "ShopDB");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.Order", b =>
+            modelBuilder.Entity("ShopApp.Models.ECommerce.Order", b =>
                 {
                     b.Property<int>("OrderID")
                         .ValueGeneratedOnAdd()
@@ -453,7 +541,7 @@ namespace ShopApp.Migrations
                     b.ToTable("Orders", "ShopDB");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.OrderItem", b =>
+            modelBuilder.Entity("ShopApp.Models.ECommerce.OrderItem", b =>
                 {
                     b.Property<int>("OrderItemID")
                         .ValueGeneratedOnAdd()
@@ -491,7 +579,7 @@ namespace ShopApp.Migrations
                     b.ToTable("OrderItems", "ShopDB");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Payment", b =>
+            modelBuilder.Entity("ShopApp.Models.ECommerce.Payment", b =>
                 {
                     b.Property<int>("PaymentID")
                         .ValueGeneratedOnAdd()
@@ -538,64 +626,7 @@ namespace ShopApp.Migrations
                     b.ToTable("Payments", "ShopDB");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Product", b =>
-                {
-                    b.Property<int>("ProductID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProductID"));
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ProductID");
-
-                    b.ToTable("Products", "ShopDB");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.ProductCategory", b =>
-                {
-                    b.Property<int>("ProductID")
-                        .HasColumnType("integer")
-                        .HasColumnOrder(0);
-
-                    b.Property<int>("CategoryID")
-                        .HasColumnType("integer")
-                        .HasColumnOrder(1);
-
-                    b.Property<DateTime?>("AssignedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ProductID", "CategoryID");
-
-                    b.HasIndex("CategoryID");
-
-                    b.ToTable("ProductCategories", "ShopDB");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.Review", b =>
+            modelBuilder.Entity("ShopApp.Models.Engagement.Review", b =>
                 {
                     b.Property<int>("ReviewID")
                         .ValueGeneratedOnAdd()
@@ -643,7 +674,66 @@ namespace ShopApp.Migrations
                     b.ToTable("Reviews", "ShopDB");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Shipment", b =>
+            modelBuilder.Entity("ShopApp.Models.Engagement.Wishlist", b =>
+                {
+                    b.Property<int>("WishlistID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WishlistID"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("WishlistName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("WishlistID");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Wishlist", "ShopDB");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Engagement.WishlistItem", b =>
+                {
+                    b.Property<int>("WishlistID")
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
+
+                    b.Property<DateTime?>("AddedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("integer")
+                        .HasColumnOrder(1);
+
+                    b.HasKey("WishlistID");
+
+                    b.HasIndex("ProductID");
+
+                    b.ToTable("WishlistItems", "ShopDB");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Logistics.Shipment", b =>
                 {
                     b.Property<int>("ShipmentID")
                         .ValueGeneratedOnAdd()
@@ -681,7 +771,7 @@ namespace ShopApp.Migrations
                     b.ToTable("Shipments", "ShopDB");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Tracking", b =>
+            modelBuilder.Entity("ShopApp.Models.Logistics.Tracking", b =>
                 {
                     b.Property<int>("TrackingID")
                         .ValueGeneratedOnAdd()
@@ -732,96 +822,9 @@ namespace ShopApp.Migrations
                     b.ToTable("Tracking", "ShopDB");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.UserAddress", b =>
-                {
-                    b.Property<string>("UserID")
-                        .HasColumnType("text")
-                        .HasColumnOrder(0);
-
-                    b.Property<int>("AddressID")
-                        .HasColumnType("integer")
-                        .HasColumnOrder(1);
-
-                    b.Property<string>("AddressName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateTime?>("AssignedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("UserID", "AddressID");
-
-                    b.HasIndex("AddressID");
-
-                    b.ToTable("UserAddresses", "ShopDB");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.Wishlist", b =>
-                {
-                    b.Property<int>("WishlistID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WishlistID"));
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("WishlistName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.HasKey("WishlistID");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Wishlist", "ShopDB");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.WishlistItem", b =>
-                {
-                    b.Property<int>("WishlistID")
-                        .HasColumnType("integer")
-                        .HasColumnOrder(0);
-
-                    b.Property<DateTime?>("AddedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ProductID")
-                        .HasColumnType("integer")
-                        .HasColumnOrder(1);
-
-                    b.HasKey("WishlistID");
-
-                    b.HasIndex("ProductID");
-
-                    b.ToTable("WishlistItems", "ShopDB");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("ShopApp.Models.ApplicationRole", null)
+                    b.HasOne("ShopApp.Models.Core.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -830,7 +833,7 @@ namespace ShopApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("ShopApp.Models.ApplicationUser", null)
+                    b.HasOne("ShopApp.Models.Core.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -839,7 +842,7 @@ namespace ShopApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("ShopApp.Models.ApplicationUser", null)
+                    b.HasOne("ShopApp.Models.Core.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -848,13 +851,13 @@ namespace ShopApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("ShopApp.Models.ApplicationRole", null)
+                    b.HasOne("ShopApp.Models.Core.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShopApp.Models.ApplicationUser", null)
+                    b.HasOne("ShopApp.Models.Core.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -863,16 +866,65 @@ namespace ShopApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("ShopApp.Models.ApplicationUser", null)
+                    b.HasOne("ShopApp.Models.Core.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Cart", b =>
+            modelBuilder.Entity("ShopApp.Models.Catalog.Inventory", b =>
                 {
-                    b.HasOne("ShopApp.Models.ApplicationUser", "User")
+                    b.HasOne("ShopApp.Models.Catalog.Product", "Product")
+                        .WithOne("Inventory")
+                        .HasForeignKey("ShopApp.Models.Catalog.Inventory", "ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Catalog.ProductCategory", b =>
+                {
+                    b.HasOne("ShopApp.Models.Catalog.Category", "Category")
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShopApp.Models.Catalog.Product", "Product")
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Core.UserAddress", b =>
+                {
+                    b.HasOne("ShopApp.Models.Core.Address", "Address")
+                        .WithMany("UserAddresses")
+                        .HasForeignKey("AddressID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShopApp.Models.Core.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.ECommerce.Cart", b =>
+                {
+                    b.HasOne("ShopApp.Models.Core.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -881,15 +933,15 @@ namespace ShopApp.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.CartItem", b =>
+            modelBuilder.Entity("ShopApp.Models.ECommerce.CartItem", b =>
                 {
-                    b.HasOne("ShopApp.Models.Cart", "Cart")
+                    b.HasOne("ShopApp.Models.ECommerce.Cart", "Cart")
                         .WithMany("CartItems")
                         .HasForeignKey("CartID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShopApp.Models.Product", "Product")
+                    b.HasOne("ShopApp.Models.Catalog.Product", "Product")
                         .WithMany("CartItems")
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -900,28 +952,17 @@ namespace ShopApp.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Inventory", b =>
+            modelBuilder.Entity("ShopApp.Models.ECommerce.Order", b =>
                 {
-                    b.HasOne("ShopApp.Models.Product", "Product")
-                        .WithOne("Inventory")
-                        .HasForeignKey("ShopApp.Models.Inventory", "ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.Order", b =>
-                {
-                    b.HasOne("ShopApp.Models.Payment", "Payment")
+                    b.HasOne("ShopApp.Models.ECommerce.Payment", "Payment")
                         .WithMany("Orders")
                         .HasForeignKey("PaymentID");
 
-                    b.HasOne("ShopApp.Models.Shipment", "Shipment")
+                    b.HasOne("ShopApp.Models.Logistics.Shipment", "Shipment")
                         .WithMany("Orders")
                         .HasForeignKey("ShipmentID");
 
-                    b.HasOne("ShopApp.Models.ApplicationUser", "User")
+                    b.HasOne("ShopApp.Models.Core.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -934,15 +975,15 @@ namespace ShopApp.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.OrderItem", b =>
+            modelBuilder.Entity("ShopApp.Models.ECommerce.OrderItem", b =>
                 {
-                    b.HasOne("ShopApp.Models.Order", "Order")
+                    b.HasOne("ShopApp.Models.ECommerce.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShopApp.Models.Product", "Product")
+                    b.HasOne("ShopApp.Models.Catalog.Product", "Product")
                         .WithMany("OrderItems")
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -953,9 +994,9 @@ namespace ShopApp.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Payment", b =>
+            modelBuilder.Entity("ShopApp.Models.ECommerce.Payment", b =>
                 {
-                    b.HasOne("ShopApp.Models.ApplicationUser", "User")
+                    b.HasOne("ShopApp.Models.Core.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -964,34 +1005,15 @@ namespace ShopApp.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.ProductCategory", b =>
+            modelBuilder.Entity("ShopApp.Models.Engagement.Review", b =>
                 {
-                    b.HasOne("ShopApp.Models.Category", "Category")
-                        .WithMany("ProductCategories")
-                        .HasForeignKey("CategoryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ShopApp.Models.Product", "Product")
-                        .WithMany("ProductCategories")
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.Review", b =>
-                {
-                    b.HasOne("ShopApp.Models.Product", "Product")
+                    b.HasOne("ShopApp.Models.Catalog.Product", "Product")
                         .WithMany("Reviews")
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShopApp.Models.ApplicationUser", "User")
+                    b.HasOne("ShopApp.Models.Core.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1002,37 +1024,9 @@ namespace ShopApp.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Shipment", b =>
+            modelBuilder.Entity("ShopApp.Models.Engagement.Wishlist", b =>
                 {
-                    b.HasOne("ShopApp.Models.Tracking", "Tracking")
-                        .WithMany("Shipments")
-                        .HasForeignKey("TrackingID");
-
-                    b.Navigation("Tracking");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.UserAddress", b =>
-                {
-                    b.HasOne("ShopApp.Models.Address", "Address")
-                        .WithMany("UserAddresses")
-                        .HasForeignKey("AddressID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ShopApp.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Address");
-
-                    b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.Wishlist", b =>
-                {
-                    b.HasOne("ShopApp.Models.ApplicationUser", "User")
+                    b.HasOne("ShopApp.Models.Core.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1041,15 +1035,15 @@ namespace ShopApp.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.WishlistItem", b =>
+            modelBuilder.Entity("ShopApp.Models.Engagement.WishlistItem", b =>
                 {
-                    b.HasOne("ShopApp.Models.Product", "Product")
+                    b.HasOne("ShopApp.Models.Catalog.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShopApp.Models.Wishlist", "Wishlist")
+                    b.HasOne("ShopApp.Models.Engagement.Wishlist", "Wishlist")
                         .WithMany("WishlistItems")
                         .HasForeignKey("WishlistID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1060,32 +1054,21 @@ namespace ShopApp.Migrations
                     b.Navigation("Wishlist");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Address", b =>
+            modelBuilder.Entity("ShopApp.Models.Logistics.Shipment", b =>
                 {
-                    b.Navigation("UserAddresses");
+                    b.HasOne("ShopApp.Models.Logistics.Tracking", "Tracking")
+                        .WithMany("Shipments")
+                        .HasForeignKey("TrackingID");
+
+                    b.Navigation("Tracking");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Cart", b =>
-                {
-                    b.Navigation("CartItems");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.Category", b =>
+            modelBuilder.Entity("ShopApp.Models.Catalog.Category", b =>
                 {
                     b.Navigation("ProductCategories");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Order", b =>
-                {
-                    b.Navigation("OrderItems");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.Payment", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.Product", b =>
+            modelBuilder.Entity("ShopApp.Models.Catalog.Product", b =>
                 {
                     b.Navigation("CartItems");
 
@@ -1099,19 +1082,39 @@ namespace ShopApp.Migrations
                     b.Navigation("Reviews");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Shipment", b =>
+            modelBuilder.Entity("ShopApp.Models.Core.Address", b =>
+                {
+                    b.Navigation("UserAddresses");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.ECommerce.Cart", b =>
+                {
+                    b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.ECommerce.Order", b =>
+                {
+                    b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.ECommerce.Payment", b =>
                 {
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("ShopApp.Models.Tracking", b =>
-                {
-                    b.Navigation("Shipments");
-                });
-
-            modelBuilder.Entity("ShopApp.Models.Wishlist", b =>
+            modelBuilder.Entity("ShopApp.Models.Engagement.Wishlist", b =>
                 {
                     b.Navigation("WishlistItems");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Logistics.Shipment", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("ShopApp.Models.Logistics.Tracking", b =>
+                {
+                    b.Navigation("Shipments");
                 });
 #pragma warning restore 612, 618
         }

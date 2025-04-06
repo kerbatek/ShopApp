@@ -1,0 +1,54 @@
+﻿@model ShopApp.ViewModels.CategoryViewModel;
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Edit Category";
+    ViewData["Stylesheet"] = "~/css/forms.css";
+}
+
+<div class="form-container">
+    <div class="form-box">
+        <h1>Enter category information</h1>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <div class="input-group" hidden>
+                <label asp-for="CategoryId">ID</label>
+                <input asp-for="CategoryId" class="readonly-input" value="@Model.CategoryId" readonly/>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            
+            <div class="input-group">
+                <label asp-for="CategoryName">Name</label>
+                <input asp-for="CategoryName" class="form-control" placeholder="Enter category name" />
+                <span asp-validation-for="CategoryName" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <label asp-for="CategoryDescription">Description</label>
+                <textarea asp-for="CategoryDescription" class="form-control" placeholder="Enter category description"></textarea>
+                <span asp-validation-for="CategoryDescription" class="text-danger"></span>
+            </div>
+            <button type="submit" class="form-button">Edit category</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.2/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.11/dist/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/localization/messages_pl.min.js"></script>
+    <script>
+        // Allow comma as decimal separator
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /^-?\d+(,\d+)?$/.test(value);
+        };
+        $.validator.methods.range = function (value, element, param) {
+            // Convert comma to dot before checking numeric range
+            var globalizedValue = value.replace(",", ".");
+            return this.optional(element) 
+                || (globalizedValue >= param[0] && globalizedValue <= param[1]);
+        };
+    </script>
+}

@@ -35,3 +35,6 @@ Thumbs.db
 # Db password 
 ShopApp/appsettings.json
 
+#Images
+ShopApp/wwwroot/images
+

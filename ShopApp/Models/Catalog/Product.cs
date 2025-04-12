@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ShopApp.Models.ECommerce;
 using ShopApp.Models.Engagement;
@@ -9,6 +11,7 @@ namespace ShopApp.Models.Catalog
     public class Product
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ProductID { get; set; }
 
         [MaxLength(100)]
@@ -22,7 +25,8 @@ namespace ShopApp.Models.Catalog
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-
+        
+        public string? ImageUrl { get; set; }
 
         public ICollection<ProductCategory> ProductCategories { get; set; }
         public ICollection<CartItem> CartItems { get; set; }

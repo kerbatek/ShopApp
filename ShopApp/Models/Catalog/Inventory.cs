@@ -7,6 +7,7 @@ namespace ShopApp.Models.Catalog
     public class Inventory
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int InventoryID { get; set; }
 
         public int ProductID { get; set; }

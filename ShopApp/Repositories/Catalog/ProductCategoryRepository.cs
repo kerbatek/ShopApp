@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ShopApp.Data;
 using ShopApp.Models.Catalog;
 using ShopApp.Repositories.Catalog.Interfaces;
@@ -9,5 +10,10 @@ public class ProductCategoryRepository : Repository<ProductCategory>, IProductCa
     public ProductCategoryRepository(AppDbContext dbContext) : base(dbContext)
     {
         
+    }
+
+    public async Task<IEnumerable<ProductCategory>> GetAllProductCategoriesByProductIdAsync(int productId)
+    {
+        return await DbSet.Where(pc => pc.ProductID == productId).ToListAsync();
     }
 }

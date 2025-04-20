@@ -1,0 +1,46 @@
+﻿@model ShopApp.ViewModels.InventoryViewModel;
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Edit Product";
+    ViewData["Stylesheet"] = "~/css/forms.css";
+}
+
+<div class="form-container">
+    <div class="form-box">
+        <h1>Edit inventory information</h1>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            <div class="input-group" hidden>
+                <label asp-for="InventoryId">ID</label>
+                <input asp-for="InventoryId" class="readonly-input" value="@Model.InventoryId" readonly/>
+                <span asp-validation-for="InventoryId" class="text-danger"></span>
+            </div>
+            
+            <div class="input-group">
+                <label asp-for="ProductName">Product Name</label>
+                <input asp-for="ProductName" class="readonly-input" placeholder="Enter product name" readonly="readonly"/>
+                <span asp-validation-for="ProductName" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <label asp-for="Quantity">Quantity</label>
+                <input asp-for="Quantity" class="form-control" placeholder="Enter quantity" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="form-button">Edit Inventory</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.2/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.11/dist/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/localization/messages_pl.min.js"></script>
+    <script src="~/js/forms.js"></script>
+}

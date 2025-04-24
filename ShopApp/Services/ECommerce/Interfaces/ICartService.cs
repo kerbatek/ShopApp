@@ -9,4 +9,5 @@ public interface ICartService
     Task AddCartAsync(Cart cart);
     Task UpdateCartAsync(Cart cart);
     Task DeleteCartAsync(Cart cart);
+    Task<Cart> GetUserCartAsync(string userID);
 }

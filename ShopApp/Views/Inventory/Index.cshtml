@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<ShopApp.ViewModels.InventoryViewModel>
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "Products List";
+    ViewData["Title"] = "Inventory List";
     ViewData["Stylesheet"] = "~/css/tables.css";
 }
 
@@ -30,7 +30,7 @@
                         <a asp-action="Edit" asp-route-id="@inventory.InventoryId" class="edit-button" title="Edit">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <form asp-action="Delete" method="post" class="action-form" onsubmit="return confirm('Are you sure you want to delete this product?');" style="display:inline;">
+                        <form asp-action="Delete" method="post" class="action-form" onsubmit="return confirm('Are you sure you want to delete this entry?');" style="display:inline;">
                             <input type="hidden" name="id" value="@inventory.InventoryId" />
                             @Html.AntiForgeryToken()
                             <button type="submit" class="delete-button" title="Delete">

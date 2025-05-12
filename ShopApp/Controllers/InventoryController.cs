@@ -72,7 +72,7 @@ public class InventoryController : Controller
         var vm = await _inventoryService.GetInventoryWithProductNameAsync(id);
         if (vm == null)
         {
-            return RedirectToAction(nameof(Index));
+            return NotFound();
         }
         return View(vm);
     }

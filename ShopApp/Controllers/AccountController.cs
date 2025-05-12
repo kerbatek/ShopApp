@@ -1,5 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ShopApp.Services.Core.Interfaces;
 using ShopApp.ViewModels;
 
@@ -54,4 +54,14 @@ public class AccountController : Controller
 
         return RedirectToAction("Index", "Home");
     }
+
+    [Authorize]
+    [HttpPost("logout")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
+    {
+        await _applicationUserService.LogoutAsync();
+        return RedirectToAction("Index", "Home");
+    }
+    
 }

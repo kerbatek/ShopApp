@@ -1,4 +1,5 @@
 using ShopApp.Models.ECommerce;
+using ShopApp.Repositories.Catalog.Interfaces;
 using ShopApp.Repositories.ECommerce.Interfaces;
 using ShopApp.Services.ECommerce.Interfaces;
 using ShopApp.ViewModels;
@@ -9,11 +10,16 @@ public class CartItemService : ICartItemService
 {
     private readonly ICartItemRepository _cartItemRepository;
     private readonly ICartRepository _cartRepository;
+    private readonly IProductRepository _productRepository;
+    private readonly IInventoryRepository _inventoryRepository;
 
-    public CartItemService(ICartItemRepository cartItemRepository,  ICartRepository cartRepository)
+    public CartItemService(ICartItemRepository cartItemRepository,  ICartRepository cartRepository,  
+        IProductRepository productRepository, IInventoryRepository inventoryRepository)
     {
         _cartItemRepository = cartItemRepository;
         _cartRepository = cartRepository;
+        _productRepository = productRepository;
+        _inventoryRepository = inventoryRepository;
     }
     
     public async Task<IEnumerable<CartItem>> GetAllCartItemsAsync()
@@ -71,10 +77,18 @@ public class CartItemService : ICartItemService
     {
         var userCart = await _cartRepository.GetCartByUserIdAsync(userID);
         var userCartID = userCart.CartID;
+
+        await _productRepository.GetByIdAsync(productID);  //throws KeyNotFoundException() if not found
+        
+        var inventory = await _inventoryRepository.GetInventoryByProductIDAsync(productID);
+        var availableQuantity = inventory.Quantity;
+
         var existingCartItem = await _cartItemRepository.GetCartItemByProductIdAsync(productID, userCartID);
         
         if (existingCartItem != null)
         {
+            if (availableQuantity - existingCartItem.Quantity - quantity < 0) throw new InvalidOperationException("Insufficient available quantity");
+            
             existingCartItem.Quantity += quantity;
             if (existingCartItem.Quantity <= 0)
             {
@@ -87,6 +101,8 @@ public class CartItemService : ICartItemService
         }
         else
         {
+            if (availableQuantity - quantity < 0) throw new InvalidOperationException("Insufficient available quantity");
+
             var newCartItem = new CartItem
             {
                 CartID = userCartID,
@@ -97,9 +113,13 @@ public class CartItemService : ICartItemService
         }
     }
 
-    public async Task DeleteCartItemByIDAsync(int cartItemID)
+    public async Task DeleteCartItemByIDAsync(int cartItemID, string userID)
     {
-        var cartItem = await _cartItemRepository.GetByIdAsync(cartItemID);
+        var cartItem = await _cartItemRepository.GetCartItemWithCartByIdAsync(cartItemID);
+        if (cartItem == null) throw new KeyNotFoundException($"CartItem with ID {cartItemID} not found");
+        
+        if (cartItem.Cart.UserID != userID) throw new UnauthorizedAccessException($"User with ID {userID} may not delete this item");
+        
         await DeleteCartItemAsync(cartItem);
     }
 }

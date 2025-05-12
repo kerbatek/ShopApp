@@ -20,5 +20,8 @@ public class CartItemRepository : Repository<CartItem>, ICartItemRepository
 
     public Task<CartItem?> GetCartItemByProductIdAsync(int productID, int cartID) 
         => DbSet.FirstOrDefaultAsync(e => e.ProductID == productID && e.CartID == cartID);
-    
+
+    public Task<CartItem?> GetCartItemWithCartByIdAsync(int cartItemID)
+        => DbSet.Include(ci => ci.Cart)
+            .FirstOrDefaultAsync(ci => ci.CartItemID == cartItemID);
 }

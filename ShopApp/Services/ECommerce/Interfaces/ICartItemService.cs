@@ -12,5 +12,5 @@ public interface ICartItemService
     Task DeleteCartItemAsync(CartItem cartItem);
     Task<List<CartViewModel>> GetCartItemsByCartIDAsync(int cartID);
     Task AddProductToCartAsync(int productID, string userID, int quantity);
-    Task DeleteCartItemByIDAsync(int cartItemID);
+    Task DeleteCartItemByIDAsync(int cartItemID, string userID);
 }

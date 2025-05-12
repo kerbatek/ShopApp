@@ -45,6 +45,28 @@
         nav a:hover {
             color: #3498db;
         }
+        
+        nav form {
+            display: inline;       
+            margin: 0;             
+        }
+
+        .header-link {
+            background: none;              
+            border: none;                   
+            color: #ecf0f1;                 
+            font-weight: 500;               
+            text-decoration: none;          
+            cursor: pointer;               
+            transition: color 0.3s ease;    
+            padding: 0;                     
+            font-family: inherit;           
+            font-size: inherit;             
+        }
+
+        .header-link:hover {
+            color: #3498db;                
+        }
         .container {
             max-width: 1200px;
             margin: 40px auto 20px auto;
@@ -53,6 +75,10 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             border-radius: 4px;
         }
+        nav ul li.auth {
+            margin-left: auto;
+            margin-right: 30px;  
+        }
     </style>
 </head>
 <body>
@@ -60,12 +86,31 @@
     <nav>
         <ul>
             <li><a href="/home">Home</a></li>
-            <li><a href="/core/login">Login</a></li>
-            <li><a href="/core/register">Register</a></li>
             <li><a href="/products/">Products</a></li>
             <li><a href="/categories/">Categories</a></li>
             <li><a href="/inventory/">Inventory</a></li>
             <li><a href="/cart/">Cart</a></li>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <li class="auth">
+                    <form asp-area="Core"
+                          asp-controller="Account"
+                          asp-action="Logout"
+                          method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="header-link">
+                            Logout
+                        </button>
+                    </form>
+                </li>
+            }
+            else
+            {
+
+                <li class="auth"><a href="/core/login">Login</a></li>
+                <li><a href="/core/register">Register</a></li>
+            }
                                     
         </ul>
     </nav>

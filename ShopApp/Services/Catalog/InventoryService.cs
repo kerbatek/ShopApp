@@ -8,10 +8,12 @@ namespace ShopApp.Services.Catalog;
 public class InventoryService :  IInventoryService
 {
     private readonly IInventoryRepository _inventoryRepository;
+    private readonly ILogger<InventoryService> _logger;
 
-    public InventoryService(IInventoryRepository inventoryRepository)
+    public InventoryService(IInventoryRepository inventoryRepository, ILogger<InventoryService> logger)
     {
         _inventoryRepository = inventoryRepository;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<Inventory>> GetAllInventoriesAsync()
@@ -49,11 +51,18 @@ public class InventoryService :  IInventoryService
 
     public async Task UpdateInventoryAsync(int InventoryId, int Quantity)
     {
-        var existingInventory = await _inventoryRepository.GetByIdAsync(InventoryId);
-        if (existingInventory == null)
+
+        Inventory existingInventory;
+        try
         {
+            existingInventory = await _inventoryRepository.GetByIdAsync(InventoryId);
+        }
+        catch (KeyNotFoundException)
+        {
+            _logger.LogError("Inventory with ID {InventoryId} not found.",  InventoryId);
             throw new InvalidOperationException("An inventory entry for this product does not exist.");
         }
+        
         existingInventory.UpdatedAt = DateTime.UtcNow;
         existingInventory.Quantity = Quantity;
         

@@ -25,6 +25,7 @@ using ShopApp.Services.Logistics;
 using ShopApp.Services.Logistics.Interfaces;
 using System.Globalization;
 using Microsoft.Extensions.Options;
+using Serilog;
 using ShopApp.Services.Shared;
 using ShopApp.Services.Shared.Interfaces;
 
@@ -117,6 +118,14 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     
     options.RequestCultureProviders.Insert(0, new Microsoft.AspNetCore.Localization.QueryStringRequestCultureProvider());
 });
+
+//Logging
+builder.Logging.ClearProviders();
+builder.Host.UseSerilog((ctx, lc) => lc
+    .WriteTo.Console()
+    .WriteTo.Debug()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+);
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

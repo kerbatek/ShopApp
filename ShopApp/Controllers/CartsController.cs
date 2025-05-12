@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApp.Models.ECommerce;
 using ShopApp.Services.ECommerce.Interfaces;
@@ -16,41 +17,66 @@ public class CartsController : Controller
         _cartService = cartService;
         _cartItemService = cartItemService;
     }
+    
+    [Authorize]
     [HttpGet("")]
     public async Task<IActionResult> Index()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Redirect("core/login");
-        }
+        
         var cart = await _cartService.GetUserCartAsync(userId);
         int cartID = cart.CartID;
         var vm = await _cartItemService.GetCartItemsByCartIDAsync(cartID);
+        
         return View(vm);
     }
-
+    
+    [Authorize]
     [HttpPost("add", Name = "AddToCart")]
     public async Task<IActionResult> Add(int productID, int quantity)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userId))
+        try
         {
-            return Redirect("core/login");
+            await _cartItemService.AddProductToCartAsync(productID, userId, quantity);
+            return RedirectToAction(nameof(Index));
         }
-        await _cartItemService.AddProductToCartAsync(productID, userId, quantity);
-        return RedirectToAction(nameof(Index));
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (InvalidOperationException)
+        {
+            return BadRequest();
+        }
     }
 
+    [Authorize]
     [HttpPost("delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int cartItemID)
     {
         if (ModelState.IsValid)
         {
-            await _cartItemService.DeleteCartItemByIDAsync(cartItemID);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            try
+            {
+                await _cartItemService.DeleteCartItemByIDAsync(cartItemID, userId);
+                return RedirectToAction(nameof(Index));
+            }
+            
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            
+            catch(UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
         }
+        
         return RedirectToAction(nameof(Index));
     }
     

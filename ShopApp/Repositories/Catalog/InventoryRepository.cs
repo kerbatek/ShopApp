@@ -15,9 +15,9 @@ public class InventoryRepository : Repository<Inventory>, IInventoryRepository
     public Task<List<Inventory>> GetAllIncludingProductAsync()
         => DbSet.Include(i => i.Product)
             .ToListAsync();
-    public Task<Inventory?> GetInventoryByProductIDAsync(int productID) 
-        => DbSet.FirstOrDefaultAsync(i => i.ProductID == productID);
-    public Task<Inventory?> GetInventoryWithProductNameAsync(int inventoryId) 
+    public Task<Inventory?> GetInventoryByProductIdAsync(int productId) 
+        => DbSet.FirstOrDefaultAsync(i => i.ProductID == productId);
+    public Task<Inventory?> GetInventoryWithProductByIdAsync(int inventoryId) 
         => DbSet.Include(i => i.Product)
             .FirstOrDefaultAsync(i => i.InventoryID == inventoryId);
 }

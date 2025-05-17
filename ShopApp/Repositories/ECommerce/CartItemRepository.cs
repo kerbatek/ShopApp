@@ -12,16 +12,16 @@ public class CartItemRepository : Repository<CartItem>, ICartItemRepository
         
     }
 
-    public Task<List<CartItem>> GetCartItemsWithProductsByCartIDAsync(int cartID) 
+    public Task<List<CartItem>> GetCartItemsWithProductsByCartIdAsync(int cartId) 
         => DbSet
             .Include(e => e.Product)
-            .Where(e => e.CartID == cartID)
+            .Where(e => e.CartID == cartId)
             .ToListAsync();
 
-    public Task<CartItem?> GetCartItemByProductIdAsync(int productID, int cartID) 
-        => DbSet.FirstOrDefaultAsync(e => e.ProductID == productID && e.CartID == cartID);
+    public Task<CartItem?> GetCartItemByProductIdAsync(int productId, int cartId) 
+        => DbSet.FirstOrDefaultAsync(e => e.ProductID == productId && e.CartID == cartId);
 
-    public Task<CartItem?> GetCartItemWithCartByIdAsync(int cartItemID)
+    public Task<CartItem?> GetCartItemWithCartByIdAsync(int cartItemId)
         => DbSet.Include(ci => ci.Cart)
-            .FirstOrDefaultAsync(ci => ci.CartItemID == cartItemID);
+            .FirstOrDefaultAsync(ci => ci.CartItemID == cartItemId);
 }

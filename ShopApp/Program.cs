@@ -140,11 +140,17 @@ app.MapFallback(context =>
     return Task.CompletedTask;
 });
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    app.UseHsts(); 
-}
+
+// if (!app.Environment.IsDevelopment())
+// {
+//     app.UseExceptionHandler("/Error");
+//     app.UseHsts(); 
+// }
+
+//Exception handler
+app.UseExceptionHandler("/Error");
+
+
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
 app.UseRequestLocalization(localizationOptions);
 

@@ -1,3 +1,4 @@
+using ShopApp.Exceptions;
 using ShopApp.Models.ECommerce;
 using ShopApp.Repositories.Catalog.Interfaces;
 using ShopApp.Repositories.ECommerce.Interfaces;
@@ -50,10 +51,10 @@ public class CartItemService : ICartItemService
         await _cartItemRepository.SaveChangesAsync();
     }
 
-    public async Task<List<CartViewModel>> GetCartItemsByCartIDAsync(int cartID)
+    public async Task<List<CartViewModel>> GetCartItemsByCartIdAsync(int cartId)
     {
         var itemsList = await _cartItemRepository
-            .GetCartItemsWithProductsByCartIDAsync(cartID);
+            .GetCartItemsWithProductsByCartIdAsync(cartId);
         
         var modelList = itemsList.Select(item => new CartViewModel
         {
@@ -73,21 +74,35 @@ public class CartItemService : ICartItemService
 
 
 
-    public async Task AddProductToCartAsync(int productID, string userID, int quantity)
+    public async Task AddProductToCartAsync(int productId, string userId, int quantity)
     {
-        var userCart = await _cartRepository.GetCartByUserIdAsync(userID);
-        var userCartID = userCart.CartID;
-
-        await _productRepository.GetByIdAsync(productID);  //throws KeyNotFoundException() if not found
+        var userCart = await _cartRepository.GetCartByUserIdAsync(userId);
+        if (userCart == null) throw new HttpResponseException(500, "User does not have a cart for some reason. This shouldn't happen.");
         
-        var inventory = await _inventoryRepository.GetInventoryByProductIDAsync(productID);
+        var userCartId = userCart.CartID;
+
+        try
+        {
+            await _productRepository.GetByIdAsync(productId); 
+        }
+        catch(KeyNotFoundException)
+        {
+            throw new HttpResponseException(400, "Product not found", true);
+        }
+        
+        var inventory = await _inventoryRepository.GetInventoryByProductIdAsync(productId);
+        if (inventory == null) throw new HttpResponseException(400, "Product doesn't have an inventory entry yet. You can't add it to cart now.", true);
+        
         var availableQuantity = inventory.Quantity;
 
-        var existingCartItem = await _cartItemRepository.GetCartItemByProductIdAsync(productID, userCartID);
+        var existingCartItem = await _cartItemRepository.GetCartItemByProductIdAsync(productId, userCartId);
         
         if (existingCartItem != null)
         {
-            if (availableQuantity - existingCartItem.Quantity - quantity < 0) throw new InvalidOperationException("Insufficient available quantity");
+            if (availableQuantity - existingCartItem.Quantity - quantity < 0)
+            {
+                throw new HttpResponseException(400, "Insufficient available quantity", true);
+            }
             
             existingCartItem.Quantity += quantity;
             if (existingCartItem.Quantity <= 0)
@@ -101,24 +116,27 @@ public class CartItemService : ICartItemService
         }
         else
         {
-            if (availableQuantity - quantity < 0) throw new InvalidOperationException("Insufficient available quantity");
+            if (availableQuantity - quantity < 0)
+            {
+                throw new HttpResponseException(400, "Insufficient available quantity", true);
+            }
 
             var newCartItem = new CartItem
             {
-                CartID = userCartID,
-                ProductID = productID,
+                CartID = userCartId,
+                ProductID = productId,
                 Quantity = quantity,
             };
             await AddCartItemAsync(newCartItem);
         }
     }
 
-    public async Task DeleteCartItemByIDAsync(int cartItemID, string userID)
+    public async Task DeleteCartItemByIdAsync(int cartItemId, string userId)
     {
-        var cartItem = await _cartItemRepository.GetCartItemWithCartByIdAsync(cartItemID);
-        if (cartItem == null) throw new KeyNotFoundException($"CartItem with ID {cartItemID} not found");
+        var cartItem = await _cartItemRepository.GetCartItemWithCartByIdAsync(cartItemId);
+        if (cartItem == null) throw new HttpResponseException(400, "Cart item not found", true);
         
-        if (cartItem.Cart.UserID != userID) throw new UnauthorizedAccessException($"User with ID {userID} may not delete this item");
+        if (cartItem.Cart.UserID != userId) throw new HttpResponseException(403, $"This cart doesn't belong to user {userId}.");
         
         await DeleteCartItemAsync(cartItem);
     }

@@ -10,7 +10,7 @@ public interface ICartItemService
     Task AddCartItemAsync(CartItem cartItem);
     Task UpdateCartItemAsync(CartItem cartItem);
     Task DeleteCartItemAsync(CartItem cartItem);
-    Task<List<CartViewModel>> GetCartItemsByCartIDAsync(int cartID);
-    Task AddProductToCartAsync(int productID, string userID, int quantity);
-    Task DeleteCartItemByIDAsync(int cartItemID, string userID);
+    Task<List<CartViewModel>> GetCartItemsByCartIdAsync(int cartId);
+    Task AddProductToCartAsync(int productId, string userId, int quantity);
+    Task DeleteCartItemByIdAsync(int cartItemId, string userId);
 }

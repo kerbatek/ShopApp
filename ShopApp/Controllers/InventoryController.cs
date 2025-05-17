@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using ShopApp.Exceptions;
 using ShopApp.Models.Catalog;
 using ShopApp.Services.Catalog.Interfaces;
 using ShopApp.ViewModels;
@@ -72,7 +71,7 @@ public class InventoryController : Controller
         var vm = await _inventoryService.GetInventoryWithProductNameAsync(id);
         if (vm == null)
         {
-            return NotFound();
+            throw new HttpResponseException(404, "Inventory entry not found", true);
         }
         return View(vm);
     }

@@ -9,7 +9,7 @@ public interface IInventoryService
     Task<Inventory> GetInventoryByIdAsync(int id);
     Task AddInventoryAsync(Inventory inventory);
     Task UpdateInventoryAsync(Inventory inventory);
-    Task UpdateInventoryAsync(int InventoryId, int Quantity);
+    Task UpdateInventoryAsync(int inventoryId, int quantity);
     Task DeleteInventoryAsync(Inventory inventory);
     
     Task<IEnumerable<InventoryViewModel>> GetAllInventoriesWithProductNamesAsync();

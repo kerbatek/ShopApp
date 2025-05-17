@@ -1,3 +1,4 @@
+using ShopApp.Exceptions;
 using ShopApp.Models.Catalog;
 using ShopApp.Repositories.Catalog.Interfaces;
 using ShopApp.Services.Catalog.Interfaces;
@@ -8,12 +9,9 @@ namespace ShopApp.Services.Catalog;
 public class InventoryService :  IInventoryService
 {
     private readonly IInventoryRepository _inventoryRepository;
-    private readonly ILogger<InventoryService> _logger;
-
     public InventoryService(IInventoryRepository inventoryRepository, ILogger<InventoryService> logger)
     {
         _inventoryRepository = inventoryRepository;
-        _logger = logger;
     }
 
     public async Task<IEnumerable<Inventory>> GetAllInventoriesAsync()
@@ -28,7 +26,7 @@ public class InventoryService :  IInventoryService
 
     public async Task AddInventoryAsync(Inventory inventory)
     {
-        var existingInventory = await _inventoryRepository.GetInventoryByProductIDAsync(inventory.ProductID);
+        var existingInventory = await _inventoryRepository.GetInventoryByProductIdAsync(inventory.ProductID);
 
         if (existingInventory != null)
         {
@@ -49,22 +47,21 @@ public class InventoryService :  IInventoryService
         await _inventoryRepository.SaveChangesAsync();
     }
 
-    public async Task UpdateInventoryAsync(int InventoryId, int Quantity)
+    public async Task UpdateInventoryAsync(int inventoryId, int quantity)
     {
 
         Inventory existingInventory;
         try
         {
-            existingInventory = await _inventoryRepository.GetByIdAsync(InventoryId);
+            existingInventory = await _inventoryRepository.GetByIdAsync(inventoryId);
         }
         catch (KeyNotFoundException)
         {
-            _logger.LogError("Inventory with ID {InventoryId} not found.",  InventoryId);
-            throw new InvalidOperationException("An inventory entry for this product does not exist.");
+            throw new HttpResponseException(400, "This inventory does not exist.", true);
         }
         
         existingInventory.UpdatedAt = DateTime.UtcNow;
-        existingInventory.Quantity = Quantity;
+        existingInventory.Quantity = quantity;
         
         await _inventoryRepository.UpdateAsync(existingInventory);
         await _inventoryRepository.SaveChangesAsync();
@@ -101,7 +98,7 @@ public class InventoryService :  IInventoryService
 
     public async Task<InventoryViewModel?> GetInventoryWithProductNameAsync(int inventoryId)
     { 
-        var inventory = await _inventoryRepository.GetInventoryWithProductNameAsync(inventoryId); 
+        var inventory = await _inventoryRepository.GetInventoryWithProductByIdAsync(inventoryId); 
         if (inventory != null) 
         { 
             return new InventoryViewModel() 

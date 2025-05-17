@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShopApp.Models.ECommerce;
 using ShopApp.Services.ECommerce.Interfaces;
 
 namespace ShopApp.Controllers;
@@ -24,57 +23,33 @@ public class CartsController : Controller
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         
-        var cart = await _cartService.GetUserCartAsync(userId);
-        int cartID = cart.CartID;
-        var vm = await _cartItemService.GetCartItemsByCartIDAsync(cartID);
+        var cart = await _cartService.GetCartByUserId(userId!);
+        int cartId = cart.CartID;
+        var vm = await _cartItemService.GetCartItemsByCartIdAsync(cartId);
         
         return View(vm);
     }
     
     [Authorize]
     [HttpPost("add", Name = "AddToCart")]
-    public async Task<IActionResult> Add(int productID, int quantity)
+    public async Task<IActionResult> Add(int productId, int quantity)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        try
-        {
-            await _cartItemService.AddProductToCartAsync(productID, userId, quantity);
-            return RedirectToAction(nameof(Index));
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
-        catch (InvalidOperationException)
-        {
-            return BadRequest();
-        }
+        await _cartItemService.AddProductToCartAsync(productId, userId!, quantity);
+        return RedirectToAction(nameof(Index));
     }
 
     [Authorize]
     [HttpPost("delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int cartItemID)
+    public async Task<IActionResult> Delete(int cartItemId)
     {
         if (ModelState.IsValid)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            try
-            {
-                await _cartItemService.DeleteCartItemByIDAsync(cartItemID, userId);
-                return RedirectToAction(nameof(Index));
-            }
-            
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            
-            catch(UnauthorizedAccessException)
-            {
-                return Forbid();
-            }
+            await _cartItemService.DeleteCartItemByIdAsync(cartItemId, userId!);
+            return RedirectToAction(nameof(Index));
         }
         
         return RedirectToAction(nameof(Index));

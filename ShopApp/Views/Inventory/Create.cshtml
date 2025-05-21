@@ -1,28 +1,34 @@
-﻿@model ShopApp.ViewModels.CategoryViewModel;
+﻿@model ShopApp.ViewModels.InventoryViewModel;
 
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "Add Categories";
+    ViewData["Title"] = "Add Inventory";
     ViewData["Stylesheet"] = "~/css/forms.css";
 }
 
 <div class="form-container">
     <div class="form-box">
-        <h1>Enter category information</h1>
+        <h1>Enter inventory information</h1>
         <div asp-validation-summary="All" class="text-danger"></div>
         <form asp-action="Create" method="post">
             @Html.AntiForgeryToken()
             <div class="input-group">
-                <label asp-for="CategoryName">Name</label>
-                <input asp-for="CategoryName" class="form-control" placeholder="Enter category name" />
-                <span asp-validation-for="CategoryName" class="text-danger"></span>
+                <label asp-for="ProductId">Product</label>
+                <select asp-for="ProductId"
+                        asp-items="@(new SelectList(Model.Products, "ProductID", "ProductName"))"
+                        class="select-input">
+                    <option value="">-- Select product --</option>
+                </select>
+                <span asp-validation-for="ProductId" class="text-danger"></span>
             </div>
 
+
             <div class="input-group">
-                <label asp-for="CategoryDescription">Description</label>
-                <textarea asp-for="CategoryDescription" class="form-control" placeholder="Enter category description"></textarea>
-                <span asp-validation-for="CategoryDescription" class="text-danger"></span>
+                <label asp-for="Quantity">Quantity</label>
+                <input asp-for="Quantity" type="number" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
+
             <button type="submit" class="form-button">Add category</button>
         </form>
     </div>

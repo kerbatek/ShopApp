@@ -1,0 +1,109 @@
+﻿@model IEnumerable<ShopApp.ViewModels.CartViewModel>
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Your Cart";
+    ViewData["Stylesheet"] = "~/css/cart.css";
+}
+
+<div class="cart-container">
+    <h2>Your Shopping Cart</h2>
+
+    @if (Model.Any())
+    {
+        <div class="cart-card">
+            <table class="cart-table">
+                <thead>
+                <tr>
+                    <th>Product</th>
+                    <th class="right">Unit Price</th>
+                    <th class="center">Qty</th>
+                    <th class="right">Subtotal</th>
+                    <th class="center">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                @if (!string.IsNullOrEmpty(item.ProductImageUrl))
+                                {
+                                    <img src="@item.ProductImageUrl" alt="@item.ProductName" />
+                                }
+                                <span class="product-name">@item.ProductName</span>
+                            </div>
+                        </td>
+                        <td class="right">@item.ProductPrice.ToString("C")</td>
+                        <td class="center">
+                            <div class="qty-control">
+                            <form asp-route="AddToCart"
+                                      method="post"
+                                      class="qty-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productID" value="@item.ProductID" />
+
+                                    <button type="submit"
+                                            name="quantity"
+                                            value="-1"
+                                            class="qty-btn minus"
+                                            title="Decrease">
+                                        &minus;
+                                    </button>
+                                </form>
+
+                                <span class="qty-value">@item.Quantity</span>
+
+                                <form asp-route="AddToCart"
+                                      method="post"
+                                      class="qty-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productID" value="@item.ProductID" />
+
+                                    <button type="submit"
+                                            name="quantity"
+                                            value="1"
+                                            class="qty-btn plus"
+                                            title="Increase">
+                                        &#43;
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+
+                        <td class="right">@((item.Quantity * item.ProductPrice).ToString("C"))</td>
+                        <td class="center actions">
+                            <form asp-action="Delete" method="post" class="inline-form" onsubmit="return confirm('Remove this item?');">
+                                <input type="hidden" name="cartItemID" value="@item.CartItemID" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="icon-btn delete-button">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+            <div class="cart-summary">
+                <span class="total-label">Total:</span>
+                <span class="total-amount">@Model.Sum(i => i.Quantity * i.ProductPrice).ToString("C")</span>
+            </div>
+
+            <div class="cart-actions">
+                <a asp-controller="Products" asp-action="Index" class="btn btn-link">
+                    <i class="fas fa-arrow-left"></i> Back to Products
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p class="empty-cart">Your cart is empty.</p>
+        <a asp-controller="Products" asp-action="Index" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i> Back to Products
+        </a>
+    }
+</div>

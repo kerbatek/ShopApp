@@ -2,15 +2,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ShopApp.Controllers
 {
+    [Route("/")]
     public class HomeController : Controller
     {
-        [HttpGet("/")]
+        [HttpGet("")]
         public IActionResult Index()
         {
-            return RedirectToAction("LoginPage", "Account");
+            return RedirectToAction(nameof(HomePage));
         }
         
-        [HttpGet("/home")]
+        [HttpGet("home")]
         public IActionResult HomePage()
         {
             return View();

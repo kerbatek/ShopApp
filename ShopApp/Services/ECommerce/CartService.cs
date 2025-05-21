@@ -40,4 +40,22 @@ public class CartService : ICartService
         await _cartRepository.DeleteAsync(cart);
         await _cartRepository.SaveChangesAsync();
     }
+
+    public async Task<Cart> GetCartByUserId(string userId)
+    {
+        var cart = await _cartRepository.GetCartByUserIdAsync(userId);
+        
+        if (cart != null) return cart;
+        
+        Cart newCart = new Cart
+        {
+            UserID = userId,
+            Status = "Active",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+        };
+        await AddCartAsync(newCart);
+        
+        return await _cartRepository.GetCartByUserIdAsync(userId) ?? newCart;
+    }
 }
